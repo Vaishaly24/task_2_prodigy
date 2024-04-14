@@ -1,0 +1,97 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <h1>STOP WATCH</h1>
+  <style>
+    h1{
+      text-align: center;
+      color: brown;
+    }
+    body{
+      background-color: burlywood;
+    }
+    .stopwatch {
+      text-align: center;
+    }
+
+    #display {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+
+    button {
+      font-size: 1em;
+      margin: 5px;
+      padding: 10px 20px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="stopwatch">
+    <div id="display">00:00:00</div>
+    <button id="startStopButton" onclick="startStop()">Start</button>
+    <button id="lapResetButton" onclick="lapReset()">Reset</button>
+    <ul id="laps"></ul>
+  </div>
+  <script>
+    let isRunning = false;
+    let startTime;
+    let interval;
+    let laps = [];
+    let lapNumber = 1;
+
+    function startStop() {
+      if (!isRunning) {
+        isRunning = true;
+        startTime = Date.now() - laps.reduce((acc, lap) => acc + lap, 0);
+        document.getElementById("startStopButton").innerText = "Stop";
+        interval = setInterval(updateDisplay, 10);
+      } else {
+        isRunning = false;
+        clearInterval(interval);
+        document.getElementById("startStopButton").innerText = "Start";
+      }
+    }
+
+    function lapReset() {
+      if (isRunning) {
+        const currentTime = Date.now();
+        const lapTime = currentTime - startTime;
+        laps.push(lapTime);
+        const lapDisplay = document.createElement("li");
+        lapDisplay.innerText = `Lap ${lapNumber++}: ${formatTime(lapTime)}`;
+        document.getElementById("laps").appendChild(lapDisplay);
+      } else {
+        laps = [];
+        lapNumber = 1;
+        document.getElementById("laps").innerHTML = "";
+        document.getElementById("display").innerText = "00:00:00";
+      }
+    }
+
+    function updateDisplay() {
+      const elapsedTime = Date.now() - startTime;
+      document.getElementById("display").innerText = formatTime(elapsedTime);
+    }
+
+    function formatTime(ms) {
+      const date = new Date(ms);
+      const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+      const seconds = date.getUTCSeconds().toString().padStart(2, "0");
+      const milliseconds = Math.floor(date.getUTCMilliseconds() / 10).toString().padStart(2, "0");
+      return `${minutes}:${seconds}:${milliseconds}`;
+    }
+  </script>
+</body>
+</html>
